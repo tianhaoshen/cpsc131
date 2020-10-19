@@ -1,7 +1,6 @@
 ///////////////////////// TO-DO (1) //////////////////////////////
 /// Include necessary header files
 /// Hint:  Include what you use, use what you include
-#include "BookDatabase.hpp"
 
 #include <algorithm>
 #include <filesystem>
@@ -11,6 +10,7 @@
 #include <string>
 
 #include "Book.hpp"
+#include "BookDatabase.hpp"
 
 namespace {
 struct ignore {
@@ -48,6 +48,8 @@ BookDatabase& BookDatabase::instance() {
   return theInstance;
 }
 
+
+
 // Construction
 BookDatabase::BookDatabase(const std::string& filename) {
   std::ifstream fin(filename, std::ios::binary);
@@ -76,13 +78,13 @@ BookDatabase::BookDatabase(const std::string& filename) {
   ///  character
   ///
 
-  std::string Author, Title, ISBN;
+  std::string ISBN, Author, Title;
   double price;
 
-  while (fin >> std::quoted(Author) >> ignore(',') >> std::quoted(ISBN) >>
+  while (fin >> std::quoted(ISBN) >> ignore(',') >> std::quoted(Author) >>
          ignore(',') >> std::quoted(Title) >> ignore(',') >> price) {
-    Book temp(ISBN, Title, Author, price);
-    data.push_back(temp);
+    Book temp(Author, Title, ISBN, price);
+    datalist.push_back(temp);
   }
   /////////////////////// END-TO-DO (2) ////////////////////////////
 
@@ -101,18 +103,17 @@ BookDatabase::BookDatabase(const std::string& filename) {
 ///                    depth of recursion may be greater than the program's
 ///                    function call stack size.  But for this programming
 ///                    exercise, getting familiar with recursion is a goal.
-
 Book* BookDatabase::find(const std::string& isbn) {
-  for (auto& book : data) {
-    if (book.isbn().compare(isbn) == 0) {
-      std::cout << "book found" << std::endl;
-      return &book;
+  for (auto& temp : datalist) {
+    if (temp.isbn().compare(isbn) == 0) {
+      // std::cout << "book found" << std::endl; // testing
+      return &temp;
+      // return the reference
     }
+    // std::cout << "book not found" << std::endl; // testing
   }
-  std::cout << "find function" << std::endl;
   return nullptr;
 }
 
-std::size_t BookDatabase::size() const { return this->data.size(); }
-
+std::size_t BookDatabase::size() const { return this->datalist.size(); } // return the size of the database which is the size of the list
 /////////////////////// END-TO-DO (3) ////////////////////////////
